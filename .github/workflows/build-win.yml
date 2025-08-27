@@ -1,0 +1,25 @@
+name: Build Windows EXE
+on:
+  workflow_dispatch: {}
+jobs:
+  win:
+    runs-on: windows-latest
+    env:
+      ELECTRON_MIRROR: https://npmmirror.com/mirrors/electron/
+      ELECTRON_BUILDER_BINARIES_MIRROR: https://npmmirror.com/mirrors/electron-builder-binaries/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install deps
+        run: npm ci
+      - name: Build Windows installer
+        run: npm run dist:win
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: win-dist
+          path: dist/**
+          if-no-files-found: error
